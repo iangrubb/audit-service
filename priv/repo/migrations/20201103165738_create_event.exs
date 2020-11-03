@@ -7,7 +7,7 @@ defmodule AuditService.Repo.Migrations.CreateEvent do
       add :initiator, :string, null: false
       add :resource, :string
       add :timestamp, :utc_datetime, default: fragment("now()")
-      add :details, :json
+      add :details, :map
     end
   end
 end

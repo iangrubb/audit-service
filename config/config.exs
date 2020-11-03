@@ -7,3 +7,5 @@ config :audit_service, AuditService.Repo,
   hostname: "localhost"
 
 config :audit_service, ecto_repos: [AuditService.Repo]
+
+config :postgrex, :json_library, Poison
