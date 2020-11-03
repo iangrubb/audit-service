@@ -7,6 +7,7 @@ defmodule AuditService.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      AuditService.Repo,
       Plug.Cowboy.child_spec(
         scheme: :http,
         plug: AuditService.Endpoint
