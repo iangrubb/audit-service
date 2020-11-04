@@ -1,5 +1,4 @@
 defmodule AuditService.Application do
-
   @moduledoc "OTP Application specification for AuditService"
 
   use Application

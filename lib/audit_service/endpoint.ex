@@ -1,45 +1,46 @@
 defmodule AuditService.Endpoint do
+  @moduledoc """
+  A Plug for handling requests, routing, and dispatching responses.
+  """
 
-    @moduledoc """
-    A Plug for handling requests, routing, and dispatching responses.
-    """
+  use Plug.Router
+  alias AuditService.EventController
 
-    use Plug.Router
-    alias AuditService.EventController
+  # Logs request info
+  plug(Plug.Logger)
 
-    # Logs request info
-    plug(Plug.Logger)
+  # Matches routes
+  plug(:match)
 
-    # Matches routes
-    plug(:match)
+  # Uses Poison to decode JSON in requests
+  plug(Plug.Parsers, parsers: [:json], json_decoder: Poison)
 
-    # Uses Poison to decode JSON in requests
-    plug(Plug.Parsers, parsers: [:json], json_decoder: Poison)
+  # Dispatches responses
+  plug(:dispatch)
 
-    # Dispatches responses
-    plug(:dispatch)
+  # Routes
 
-    # Routes
-
-    get "/events" do
-        send_resp(conn,  200, "Beef")
+  get "/events" do
+    case EventController.index(conn.query_params) do
+        {:ok, result} -> {200, result}
+        {:error, error} -> {400, error}
     end
+    |> package_resp(conn)
+  end
 
-    post "/events" do
-        case EventController.create(conn.body_params) do
-            {:ok, body} -> {200, body}
-            {:error, error} -> {422, error}
-        end
-        |> package_resp(conn)
+  post "/events" do
+    case EventController.create(conn.body_params) do
+      {:ok, body} -> {200, body}
+      {:error, error} -> {422, error}
     end
+    |> package_resp(conn)
+  end
 
-    match _ do
-        send_resp(conn, 404, "No Route Found")
-    end
+  match _ do
+    send_resp(conn, 404, "No Route Found")
+  end
 
-    defp package_resp({status, body}, conn) do
-        send_resp(conn, status, Poison.encode!(body))
-    end
-
-
+  defp package_resp({status, body}, conn) do
+    send_resp(conn, status, Poison.encode!(body))
+  end
 end
